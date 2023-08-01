@@ -49,7 +49,7 @@ if __name__ == '__main__':
             rts.append(current_rt)
             current_spectrum_count += 1
 
-            matching_rows = np.array(np.logical_and(((inclusion_list['mz'] - precursor_mz).abs() % (1./inclusion_list['z'])) < mz_tol*inclusion_list['mz'], ((inclusion_list['mz'] - precursor_mz).abs() / (1./inclusion_list['z'])) < 5.)) #find matching targets within mass tolerance
+            matching_rows = np.array(np.logical_and(((inclusion_list['m/z'] - precursor_mz).abs() % (1./inclusion_list['z'])) < mz_tol*inclusion_list['m/z'], ((inclusion_list['m/z'] - precursor_mz).abs() / (1./inclusion_list['z'])) < 5.)) #find matching targets within mass tolerance
             # matching_rows_1_up = np.array((inclusion_list['mz'] + 1./inclusion_list['z'] - precursor_mz).abs() < mz_tol*inclusion_list['mz'])
             # matching_rows_1_down = np.array((inclusion_list['mz'] - 1./inclusion_list['z'] - precursor_mz).abs() < mz_tol*inclusion_list['mz'])
             # matching_rows = matching_rows | matching_rows_1_down | matching_rows_1_up
@@ -58,7 +58,8 @@ if __name__ == '__main__':
                 # print(current_rt)
                 # print(precursors)
                 # print(spectrum.precursors)
-            inclusion_list['MS2 RT diff'].loc[matching_rows] = np.minimum(inclusion_list['MS2 RT diff'].loc[matching_rows], (inclusion_list.loc[matching_rows]['rt']/60. - current_rt).abs()) #update the closest matching RT for each target
+            replace_rows = np.logical_and(matching_rows, ((inclusion_list['RT Time (min)'] - current_rt).abs() < inclusion_list['MS2 RT diff'].abs())) #get rows where new RT is closer to the target RT than the previous best match
+            inclusion_list['MS2 RT diff'].loc[replace_rows] = inclusion_list.loc[replace_rows]['RT Time (min)'] - current_rt #update delta for the closest matching RT for each target
             # print('existing RT diff: ' + str(inclusion_list['MS2 RT diff'].loc[matching_rows]))
             # print('new RT diff: ' + str(inclusion_list.loc[matching_rows]['rt']/60. - current_rt))
 
