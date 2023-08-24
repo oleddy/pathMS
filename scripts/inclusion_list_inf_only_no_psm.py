@@ -3,9 +3,9 @@ import numpy as np
 import pandas as pd
 from numpy import logical_and, logical_not, logical_or
 
-min_intensity = 3e5
+min_intensity = 5e4
 min_rt = 25.*60.
-max_rt = 95.*60.
+max_rt = 115.*60.
 min_inf_snr = 1.5
 min_inf_score = 0.5
 
