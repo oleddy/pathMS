@@ -5,9 +5,9 @@ from numpy import logical_and, logical_not, logical_or
 
 min_intensity = 1e5
 min_rt = 25.*60.
-max_rt = 95.*60.
+max_rt = 115.*60.
 min_inf_snr = 1.5
-min_inf_score = 0.5
+min_inf_score = 0.3
 
 #TODO: make this more flexible/less hard-coded – read in filter set from file
 #and write a function that parses each line from the filter set file and returns a boolean

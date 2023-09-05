@@ -35,9 +35,11 @@ if __name__ == '__main__':
 
         #get grouping data output by deeprtalign
         group_data = pd.read_csv(join(args.g, file))
+        paired_groups = [sum(group == group_data['group']) > 1 for group in group_data['group']] #predicate that identifies rows that are in groups with >1 member. 
+        paired_data = group_data.loc[paired_groups]
 
         #find peaks in the infected sample data that are not part of any grouping (i.e., not paired with any sample in mock data)
-        unmatched_peaks = get_unmatched(unmatched_peaks, group_data, cols = ['mz', 'charge', 'rtApex'])
+        unmatched_peaks = get_unmatched(unmatched_peaks, paired_data, cols = ['mz', 'charge', 'rtApex'])
 
         print('Completed file ' + file)
         print('Remaining unmatched peaks: ' + str(unmatched_peaks.shape[0]))

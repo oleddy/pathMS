@@ -35,12 +35,20 @@ if __name__ == '__main__':
         ctrl_files.remove('.DS_Store')
     except ValueError:
         pass
+    inf_files = [file for file in inf_files if file[0] != '.']
+    ctrl_files = [file for file in ctrl_files if file[0] != '.']
+    n_frac = len(inf_files)
+    print(inf_files)
+    print(len(inf_files))
+    print(ctrl_files)
+    print(len(ctrl_files))
+    assert len(inf_files) == len(ctrl_files)
+    for i in range(n_frac):
 
-    sample_table = pd.DataFrame(columns = ['file', 'sample', 'fraction'])
+        sample_table = pd.DataFrame(columns = ['file', 'sample', 'fraction'])
 
-    sample_table['file'] = inf_files + ctrl_files
-    sample_table['sample'] = ['A1']*len(inf_files) + ['A2']*len(ctrl_files)
-    sample_table['fraction'] = ['F' + str(i + 1) for i in range(len(inf_files))] + ['F' + str(i + 1) for i in range(len(ctrl_files))]
-
-    sample_table.to_excel(args.o, index = False)
+        sample_table['file'] = [inf_files[(i-1) % n_frac], inf_files[i], inf_files[(i+1) % n_frac], ctrl_files[(i-1) % n_frac], ctrl_files[i], ctrl_files[(i+1) % n_frac]]
+        sample_table['sample'] = ['A' + str(i + 1) for i in range(6)]
+        sample_table['fraction'] = ['F1']*6
+        sample_table.to_excel(join(args.o,'F'+str(i+1)+'_sample_file.xlsx'), index = False)
     
