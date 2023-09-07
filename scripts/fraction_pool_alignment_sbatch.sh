@@ -12,7 +12,6 @@
 RUNPATH=/home/owenl/pathms/pathMS/
 cd $RUNPATH
 module add python/3.8
-source ./venv/bin/activate
 
 while getopts s:f:o: flag
 do
