@@ -1,0 +1,3 @@
+[submodule "AutoMS"]
+	path = AutoMS
+	url = https://github.com/oleddy/AutoMS.git
