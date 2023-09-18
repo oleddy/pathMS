@@ -32,8 +32,10 @@ if __name__ == '__main__':
     #deeprtalign potentially outputs multiple files of grouping information, so we need to check each of them
     #on each iteration, more peaks will be matched and eliminated
     #fortunately, get_unmatched is composable with itself, so we can just do this iteratively
-    for file in listdir(args.g):
-
+    files = [file for file in listdir(args.g) if file[0] != '.']
+    
+    for file in files:
+        print('Started file ' + file)
         #get grouping data output by deeprtalign
         group_data = pd.read_csv(join(args.g, file))
         mock_filter = []
