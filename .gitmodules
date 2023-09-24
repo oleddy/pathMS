@@ -1,3 +1,7 @@
 [submodule "AutoMS"]
 	path = AutoMS
 	url = https://github.com/oleddy/AutoMS.git
+
+[submodule "dinosaur"]
+	path = dinosaur
+	url = https://github.com/fickludd/dinosaur.git
