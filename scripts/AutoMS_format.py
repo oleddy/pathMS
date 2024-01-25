@@ -8,35 +8,28 @@ using a denoising autoencoder.
 
 '''
 
-#TODO: save a version with and without charge state (z)
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-i', help = 'input file (Dinosaur feature format)', required = True)
-    parser.add_argument('-o', help = 'output file path (XCMS format)', required = True)
+#dictionary mapping columns of Dinosaur feature table format to XCMS format
+column_dict = {
+    'mz' : 'mz',
+    'rtApex' : 'rt',
+    'rtStart' : 'rt1',
+    'rtEnd' : 'rt2',
+    'intensityApex' : 'intensity'
+}
 
-    args = parser.parse_args()
+column_dict = {
+    'mz' : 'mz',
+    'rtApex' : 'rt',
+    'rtStart' : 'rt1',
+    'rtEnd' : 'rt2',
+    'intensityApex' : 'intensity',
+    'charge' : 'z'
+}
 
-    #dictionary mapping columns of Dinosaur feature table format to XCMS format
-    column_dict = {
-        'mz' : 'mz',
-        'rtApex' : 'rt',
-        'rtStart' : 'rt1',
-        'rtEnd' : 'rt2',
-        'intensityApex' : 'intensity'
-    }
-
-    column_dict = {
-        'mz' : 'mz',
-        'rtApex' : 'rt',
-        'rtStart' : 'rt1',
-        'rtEnd' : 'rt2',
-        'intensityApex' : 'intensity',
-        'charge' : 'z'
-    }
-
+def AutoMS_format(infile, outfile):
     output_columns = list(column_dict.values()) #we are only going to take the columns relevant to the XCMS format (i.e., the same ones we're renaming)
 
-    input_table = pd.read_csv(args.i) #get the input data
+    input_table = pd.read_csv(infile) #get the input data
     input_table.rename(mapper = column_dict, axis = 1, inplace = True) #rename columns in place
 
     #XCMS counts RT in seconds, so we need to convert our RTs from minutes to seconds. 
@@ -45,7 +38,7 @@ if __name__ == '__main__':
     input_table['rt2'] =  input_table['rt2']*60.
 
     #generate output path for the version of the file with z (charge state) included
-    output_dir_split = args.o.split('.')
+    output_dir_split = outfile.split('.')
     output_dir_2 = '.'.join(output_dir_split[:-1]) + '_z.' + output_dir_split[-1] #insert '_z' before the file extension
 
     output_table = input_table[output_columns] #take only the columns relevant for the XCMS format
@@ -54,8 +47,17 @@ if __name__ == '__main__':
     #remove 'z' from list of columns and output this as a separate version of the table
     output_columns.remove('z')
     output_table_2 = input_table[output_columns]
-    output_table_2.to_csv(args.o, index = False)
+    output_table_2.to_csv(outfile, index = False)
 
+#TODO: save a version with and without charge state (z)
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', help = 'input file (Dinosaur feature format)', required = True)
+    parser.add_argument('-o', help = 'output file path (XCMS format)', required = True)
+
+    args = parser.parse_args()
+    
+    AutoMS_format(args.i, args.o)
    
 
 

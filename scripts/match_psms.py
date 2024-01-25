@@ -11,6 +11,17 @@ def has_match(psm_data, peak):
     match = logical_and(in_rt_range, in_mz_range)
     return any(match)
 
+def match_psms(psm_file, unmatched_peaks_file, outfile):
+    if psm_file.split('.')[-1] == 'txt': #if raw tsv file (unfiltered PSMs, e.g.)
+        psm_data = pd.read_csv(args.p, delim_whitespace = True)
+    elif psm_file.split('.')[-1] == 'csv': #if csv file (filtered PSMs, e.g.)
+        psm_data = pd.read_csv(psm_file)
+
+    peaks_data = pd.read_csv(unmatched_peaks_file)
+
+    peaks_data['matching_psm'] = [has_match(psm_data, peak) for _, peak in peaks_data.iterrows()]
+    peaks_data.to_csv(outfile)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', help = 'input psm file', required = True)
@@ -18,16 +29,5 @@ if __name__ == '__main__':
     parser.add_argument('-o', help = 'output path', required = True)
 
     args = parser.parse_args()
-
-    if args.p.split('.')[-1] == 'txt': #if raw tsv file (unfiltered PSMs, e.g.)
-        psm_data = pd.read_csv(args.p, delim_whitespace = True)
-    elif args.p.split('.')[-1] == 'csv': #if csv file (filtered PSMs, e.g.)
-        psm_data = pd.read_csv(args.p)
-
-    peaks_data = pd.read_csv(args.u)
-
-    peaks_data['matching_psm'] = [has_match(psm_data, peak) for _, peak in peaks_data.iterrows()]
-    peaks_data.to_csv(args.o)
-        
-    
+    match_psms(args.p, args.u, args.o)
     

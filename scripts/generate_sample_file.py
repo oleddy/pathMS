@@ -3,6 +3,13 @@ import argparse
 from os.path import basename
 import pandas as pd
 
+def generate_sample_file(inf_features, mock_features, outfile):
+    #TO DO: Add support for fractionated samples – check if the inputs are directories rather than files and if so add each file in the directory as a separate fraction
+    #generate sample table in appropriate format for input to deeprtalign
+    sample_table = pd.DataFrame([[basename(inf_features), 'A1', 'F1'], [basename(mock_features), 'A2', 'F1']], columns = ['file', 'sample', 'fraction'])
+    sample_table.to_excel(outfile, index = False)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help = 'input infected file (Dinosaur feature output)', required = True)
@@ -11,7 +18,4 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
 
-    #TO DO: Add support for fractionated samples – check if the inputs are directories rather than files and if so add each file in the directory as a separate fraction
-    #generate sample table in appropriate format for input to deeprtalign
-    sample_table = pd.DataFrame([[basename(args.i), 'A1', 'F1'], [basename(args.c), 'A2', 'F1']], columns = ['file', 'sample', 'fraction'])
-    sample_table.to_excel(args.o, index = False)
+    generate_sample_file(args.i, args.c, args.o)

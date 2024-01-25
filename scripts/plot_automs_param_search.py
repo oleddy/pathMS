@@ -3,8 +3,8 @@ import pandas as pd
 import argparse
 from numpy import logical_and, logical_or, logical_not
 
-lengths = [60, 100]
-ppms = [40]
+lengths = [10, 20, 40, 60, 100]
+ppms = [10, 20, 40]
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -23,6 +23,7 @@ if __name__ == '__main__':
     self_psm = logical_and(data['TB-derived'] == False, (data['RT in min'] - data['rt']) < args.t)
     bac_psm = logical_and(data['TB-derived'] == True, (data['RT in min'] - data['rt']) < args.t)
 
+    print(data.columns)
 
     for ppm in ppms:
         for length in lengths:
