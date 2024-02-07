@@ -13,7 +13,7 @@ def has_match(psm_data, peak):
 
 def match_psms(psm_file, unmatched_peaks_file, outfile):
     if psm_file.split('.')[-1] == 'txt': #if raw tsv file (unfiltered PSMs, e.g.)
-        psm_data = pd.read_csv(args.p, delim_whitespace = True)
+        psm_data = pd.read_csv(psm_file, delim_whitespace = True)
     elif psm_file.split('.')[-1] == 'csv': #if csv file (filtered PSMs, e.g.)
         psm_data = pd.read_csv(psm_file)
 

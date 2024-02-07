@@ -50,7 +50,7 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
 
     #generate sample file
     if not os.path.isfile('sample_file.xlsx') or regenerate:
-        generate_sample_file('./features/%s.features.tsv' % inf_file_prefix, mock_file_prefix + '.features.tsv', 'sample_file.xlsx')
+        generate_sample_file('./features/%s.features.tsv' % inf_file_prefix, './features/%s.features.tsv' % mock_file_prefix, 'sample_file.xlsx')
         regenerate = True
     else:
         print('Using existing sample file')
