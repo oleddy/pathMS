@@ -69,7 +69,7 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
     #find unpaired peaks
     charge_states = [int(charge) for charge in charge_state_list.split(',')]
     if not os.path.isfile('unpaired_peaks.csv') or regenerate:
-        find_unpaired_peaks('./mass_align_all_information/', './features/%s.features.tsv' % inf_file_prefix, 'unpaired_peaks.csv', charge_states = charge_states)
+        find_unpaired_peaks(join(working_dir, 'mass_align_all_information'), join(working_dir,'features/%s.features.tsv') % inf_file_prefix, 'unpaired_peaks.csv', charge_states = charge_states)
         regenerate = True
     else:
         print('Using existing unpaired peaks file')
@@ -85,7 +85,7 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
 
     print('Step 6: running AutoMS')
 
-    if not os.path.isfile('AutoMS_scores.csv') or regenerate:
+    if not os.path.isfile(join(working_dir,'AutoMS_scores.csv')) or regenerate:
         #get absolute paths of mzML file so we can still find it after working directory change
         inf_mzml_abs = abspath(inf_mzml)
 
