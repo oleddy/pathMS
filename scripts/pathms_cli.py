@@ -35,11 +35,11 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
     
     if (not os.path.isfile('./features/%s.features.tsv' % mock_file_prefix)) or (not os.path.isfile('./features/%s.features.tsv' % inf_file_prefix)) or regenerate:
         #run Dinosaur on mock/control mzML file
-        os.system('java -jar %s --verbose --profiling --concurrency=%d %s' % (dinosaur_jar_dir, n_cores, abspath(mock_mzml))) 
+        os.system('java -Xmx8G -jar %s --verbose --profiling  --concurrency=%d %s' % (dinosaur_jar_dir, n_cores, abspath(mock_mzml))) 
         os.system('mv %s ./features/%s.features.tsv' % (mock_features_path, mock_file_prefix)) #move results to the features directory
 
         #run Dinosaur on infection/disease mzML file
-        os.system('java -jar %s --verbose --profiling --concurrency=%d %s' % (dinosaur_jar_dir, n_cores, abspath(inf_mzml))) 
+        os.system('java -Xmx8G -jar %s --verbose --profiling --concurrency=%d %s' % (dinosaur_jar_dir, n_cores, abspath(inf_mzml))) 
         os.system('mv %s ./features/%s.features.tsv' % (inf_features_path, inf_file_prefix)) #move results to the features directory
     
         regenerate = True
