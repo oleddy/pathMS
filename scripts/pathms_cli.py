@@ -13,7 +13,7 @@ sys.path.insert(0, '') #always include the current working directory in PYTHONPA
 
 script_directory = os.path.dirname(os.path.abspath(sys.argv[0])) #directory where this script itself is located
 
-def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 40, length = 40, min_score = 0.3, min_snr = 1.5, min_intensity = 1e4, charge_state_list = '2,3', min_rt = 25.*60., max_rt = 115.*60., window = 3., regenerate = False):
+def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 40, length = 40, min_score = 0.3, min_snr = 1.5, min_intensity = 1e4, charge_state_list = '2,3', min_rt = 25.*60., max_rt = 115.*60., window = 3., regenerate = False, chunksize = 4096):
     
     #run Dinosaur to find MS1 peaks
     os.chdir(script_directory) #go to script directory to find the jar directory in relative terms
@@ -95,7 +95,7 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
 
         #run AutoMS
         from AutoMS_score_inf_only import AutoMS_score
-        AutoMS_score(join(working_dir, 'unpaired_peaks_AutoMS_z.csv'), inf_mzml_abs, join(working_dir, 'AutoMS_scores.csv'), length = length, ppm = ppm)
+        AutoMS_score(join(working_dir, 'unpaired_peaks_AutoMS_z.csv'), inf_mzml_abs, join(working_dir, 'AutoMS_scores.csv'), length = length, ppm = ppm, n_cores = n_cores, chunksize = chunksize)
 
         #change back to working directory
         os.chdir(working_dir)
@@ -144,6 +144,7 @@ if __name__ == '__main__':
     parser.add_argument('--window', help = 'retention time window width for inclusion list scheduling (in minutes)', required = False, default = 3., type = float)
     parser.add_argument('-z', '--charges', help = 'comma separated list of charge states', required = False, default = '2,3')
     parser.add_argument('--regenerate', help = 're-generate all intermediate outputs, even if they already exist', required = False, default = False)
+    parser.add_argument('--chunksize', help = 'batch size for AutoMS scoring', required = False, type = int, default = 4096)
 
     args = parser.parse_args()
 
@@ -158,5 +159,6 @@ if __name__ == '__main__':
                min_rt = args.min_rt,
                max_rt = args.max_rt,
                window = args.window,
-               regenerate = args.regenerate
+               regenerate = args.regenerate,
+               chunksize = args.chunksize
                )
