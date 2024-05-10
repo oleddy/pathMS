@@ -1,11 +1,14 @@
 import tkinter as tk
 from tkinter import filedialog
 from multiprocessing import cpu_count
+import threading
 
 from pathms_cli import run_pathms
 
 from os.path import join
 
+
+#TO DO: add mz and RT column names in PSM file as arguments?
 class PathMS_App:
     def __init__(self, master):
         self.master = master
@@ -45,11 +48,11 @@ class PathMS_App:
         self.chunksize_entry = self.create_parameter_entry("AutoMS batch size: ", 14, 0)
 
         #set MHC-I default parameters
-        self.set_defaults_I_button = tk.Button(master, text="MHC-I defaults", command=self.set_defaults_MHC_I)
+        self.set_defaults_I_button = tk.Button(master, text="Set MHC-I defaults", command=self.set_defaults_MHC_I)
         self.set_defaults_I_button.grid(row=15, column=0, pady=20)
 
         #set MHC-II default parameters
-        self.set_defaults_I_button = tk.Button(master, text="MHC-II defaults", command=self.set_defaults_MHC_II)
+        self.set_defaults_I_button = tk.Button(master, text="Set MHC-II defaults", command=self.set_defaults_MHC_II)
         self.set_defaults_I_button.grid(row=15, column=1, pady=20)
 
         #start button
@@ -138,23 +141,39 @@ class PathMS_App:
         max_rt_value = self.max_rt_entry.get()
         chunksize_value = self.chunksize_entry.get()
 
-        run_pathms(inf_path,
+        self.status_label = tk.Label(self.master, text = 'Running... (this may take up to 3 hours)')
+        self.status_label.grid(row = 16, column = 0, pady = 10)
+
+        args = (inf_path,
                    ctrl_path,
                    psm_path,
-                   wd,
-                   n_cores = int(n_cores_value),
-                   ppm = int(ppm_value),
-                   length = float(length_value),
-                   min_score = float(min_score_value),
-                   min_snr = float(min_snr_value),
-                   min_intensity=float(min_intensity_value),
-                   charge_state_list=charge_value,
-                   min_rt = float(min_rt_value)*60.,
-                   max_rt=float(max_rt_value)*60.,
-                   window=float(window_value),
-                   regenerate = False,
-                   chunksize=int(chunksize_value)
-                   )        
+                   wd
+                )
+        
+        kwargs = {
+            'n_cores' : int(n_cores_value),
+            'ppm' : int(ppm_value),
+            'length' : float(length_value),
+            'min_score' : float(min_score_value),
+            'min_snr' : float(min_snr_value),
+            'min_intensity':float(min_intensity_value),
+            'charge_state_list':charge_value,
+            'min_rt' : float(min_rt_value)*60.,
+            'max_rt':float(max_rt_value)*60.,
+            'window':float(window_value),
+            'regenerate' : False,
+            'chunksize':int(chunksize_value)
+        }
+
+        pathms_thread = threading.Thread(target = self.start_pathms, args = args, kwargs = kwargs)
+        pathms_thread.start() 
+
+    def start_pathms(self, *args, **kwargs):
+        run_pathms(*args, **kwargs)
+        self.master.after(0, lambda: self.update_status_label('Complete – see inclusion_list.csv for output'))
+    
+    def update_status_label(self, text):
+        self.status_label.config(text = text)
 
 if __name__ == '__main__':
     root = tk.Tk()
