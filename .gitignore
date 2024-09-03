@@ -8,9 +8,11 @@ msmeg_pilot_2/
 msmeg_pilot_3/
 frac_pilot/
 pathMHC_env/
+tkvenv/
 SIL_pilot/
 SIL_rerun/
 DE_pilot/
+binary_test/
 
 
 
