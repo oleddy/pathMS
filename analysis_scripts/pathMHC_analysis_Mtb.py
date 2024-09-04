@@ -1,6 +1,12 @@
 import pandas as pd
 import argparse
 
+'''
+Takes in spreadsheets of PSMs (for DDA and PRM runs) with a boolean field (TB-derived) indicating whether they are
+self-derived or pathogen-derived and analyzes the number and proportion of unique peptides in each that are pathogen-derived,
+as well as the number of pathogen-derived peptides that are unique to the PRM run and were not found by DDA. 
+'''
+
 def get_unique_pathogen_peptides(psms):
     psms_unique = psms.drop_duplicates(subset = ['Annotated Sequence'])
     psms_path = psms_unique.loc[psms_unique['TB-derived']]

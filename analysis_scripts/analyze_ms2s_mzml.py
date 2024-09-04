@@ -4,6 +4,13 @@ import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
 
+'''
+1. Plot the proportion of precursors that have at least one MS2 scan within a given retention time window, as a function of retention time window size. 
+(To assess what proportion of your inclusion list was actually scanned during a PRM run.)
+2. Plot the number of MS2 scans per MS1 scan as a function of retention time. 
+(To assess whether your PRM run is instrument cycle time limited.)
+'''
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help = 'input inclusion list', required = True)

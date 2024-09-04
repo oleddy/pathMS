@@ -5,6 +5,11 @@ from numpy import abs
 from matplotlib import pyplot as plt
 from os.path import join
 
+'''
+Plot a histogram of the retention time differences between peaks that were matched with one another by
+DeepRTalign. -i should be the output folder for DeepRTalign (my_working_directory/mass_align_all_information).
+'''
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help = 'input directory', required = True)

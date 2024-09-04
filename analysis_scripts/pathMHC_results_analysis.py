@@ -3,6 +3,12 @@ import argparse
 import numpy as np
 from matplotlib import pyplot as plt
 
+'''
+Print number and percentage of bacterial peptides in DDA vs PRM runs,
+as well as number of new unique bacterial peptides detected in DDA #2 but not DDA #1
+or PRM but not DDA #1. Useful for benchmarking pathMS vs. DDA only. 
+'''
+
 def unique(input):
     return list(set(input))
 

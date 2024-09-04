@@ -4,7 +4,10 @@ from numpy import logical_and, logical_not, logical_or
 import numpy as np
 from SIL_plot_automs_param_search import has_matches
 
-
+'''
+Check sensitivity and specificity of AutoMS in scoring a set of known peptide precursors. 
+Similar to automs_specificity.py, but uses a single, pre-generated AutoMS output file. 
+'''
 
 min_intensity = 1e4
 min_rt = 25.*60.

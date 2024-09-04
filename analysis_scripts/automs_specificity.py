@@ -11,6 +11,12 @@ from SIL_plot_automs_param_search import has_matches
 lengths = [10, 20, 40, 60, 100]
 ppms = [10, 20, 40]
 
+'''
+Measure sensitivity and specificity of AutoMS (at a given set of score threhsold values)
+at distinguishing a set of target peaks (known real peptide precursors of interest) from all other peaks, 
+as a function of m/z tolerance (ppms) and XIC length (lenghts). 
+'''
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', help = 'input csv (automs parameter search results)', required = True)

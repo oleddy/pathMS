@@ -5,6 +5,16 @@ from numpy import logical_not
 from matplotlib import pyplot as plt
 import numpy as np
 
+'''
+Plot a histogram of integrated precursor ion intensity for:
+1. All precursors that got an MS2 scan in a PRM run
+2. Precursors that got an MS2 scan but no ID (PSM that passed filters)
+3. Precursors that were identified as a self peptide
+4. Precursors that were identified as a bacterial/pathogen peptide
+
+Useful for setting minimum intensity thresholds. 
+'''
+
 def get_ms2s_and_intensities(peak_list, rt_tolerance, run, mz_tol_ppm = 10):
     output_list = peak_list.copy()
     mz_tol = mz_tol_ppm/1e6

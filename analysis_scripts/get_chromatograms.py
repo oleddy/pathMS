@@ -4,6 +4,10 @@ import pandas as pd
 from numpy import zeros
 from os.path import join
 
+'''
+Get XICs for target peptides of interest
+'''
+
 #retrieve extracted ion chromatogram (XIC) for a given set of m/z values from a pymzml reader object
 def xic(mzml_reader, mzs):
     #round mz values to get coarse-grained bins we can easily add chromatographic peaks into

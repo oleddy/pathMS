@@ -6,6 +6,10 @@ from os.path import join
 
 crop_window = 10. #width (in minutes) of window of retention times to plot
 
+'''
+Plot XICs (obtained using get_chromatograms.py)
+'''
+
 #retrieve XIC for ion and crop it to a specified window around the apex of the putative peak
 def get_cropped_xic(peak, chromatogram_data):
 

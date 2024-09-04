@@ -3,6 +3,13 @@ from numpy import logical_not, logical_and
 import pandas as pd
 import argparse
 
+'''
+Plot the retention time of a PSM vs. the expected (i.e., previously observed) retention time of the precursor ion associated with the
+line of the inclusion list that triggered the scan. 
+Useful to assess if you need to do scheduled PRM. Spurious scans of precursors that are not actually the
+one the inclusion list is meant to target will be off the diagonal. 
+'''
+
 #checks whether any m/z values in mz_list match "mz" to within tolerance "tol" (in ppm)
 def any_match_within_tol(mz, mz_list, tol):
     return any((mz_list - mz).abs() < mz*tol/1e6)

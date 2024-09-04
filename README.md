@@ -1,4 +1,5 @@
 # pathMS
+
 PathMS is a computational pipeline that enables selective targeting of pathogen-specific peptides in mixed host-pathogen proteomic samples by mass spectrometry (MS), helping to identify the "needle in a haystack" of pathogen-derived peptides in a host-dominated sample. By analyzing LC-MS data, pathMS identifies precursor ion peaks that are unique to infected cells and absent in uninfected controls and generates an inclusion list of these peaks that can be targeted in a subsequent targeted MS analysis (for example, using parallel reaction monitoring). 
 
 PathMS is the computational pipeline used in our PathMHC immunopeptidomics workflow for vaccine target discovery, enabling more efficient detection of pathogen-derived peptides presented on MHCs for recognition by T cells. 
@@ -47,6 +48,7 @@ PathMS was tested on MacOS 12.0.1 with Python 3.8.16.
 MS data should be in .mzml format. Only MS1 data will be directly analyzed, so MS2 data (that is, MS/MS spectra) can be excluded when exporting files. One .mzml file for the infected sample and one for the uninfected sample are required. Additionally, a spreadsheet of peptide-spectrum matches from a database search of your MS run of the infected sample is needed, so that peptides already identified in the initial untargeted MS run are not added to the inclusion list for the targeted MS run. An example can be found under `/examples`. Other parameters are discussed below. 
 
 ## Expected output
+
 The output will be a .csv file called `inclusion_list.csv` specifying the list of putative infection-specific precursor ions to be targeted for MS analysis, generated in the specified working directory (see parameters below). This file is formatted so it can be imported directly as an inclusion list in the "Targeted Mass" node of a Thermo mass spec instrument method. The list may need to be reformatted for other instruments. 
 
 In addition, the following outputs will be automatically generated in the working directory at intermediate steps in the pipeline:
@@ -65,6 +67,7 @@ In addition, the following outputs will be automatically generated in the workin
 These outputs may be useful in diagnosing and troubleshooting problems, or analyzing why specific precursor ions were included or excluded in the final list of targets. 
 
 ## Run pathMS
+
 To run pathMS from the command line, run
 ~~~
 python pathms_cli.py
@@ -90,6 +93,15 @@ in the `scripts` directory and specify the following arguments:
 |`--chunksize`|Batch size for AutoMS scoring (used to avoid running out of memory by scoring too many precursor ions at once).|N|`4096`|
 
 ## Analysis scripts
-In addition to the code for the pathMS pipeline itself, we provide additional scripts for analyzing your MS data and evaluating the performance of the pipeline. These can be useful in tuning parameters to meet the needs of your specific dataset and application area. 
+
+In addition to the core code used in the pathMS pipeline itself (found in `/scripts`), we provide additional scripts for analyzing your MS data and evaluating the performance of the pipeline (under `/analysis_scripts`). These can be useful in tuning parameters to meet the needs of your specific dataset and application area. Additional test and analysis scripts that require AutoMS to run can be found under `AutoMS`. Comments in each script describe its function. 
+
+## Public dataset analysis
+
+Scripts we used to analyze the output of pathMS after running on publicly available immunopeptidomics datasets in our manuscript on pathMHC can be found under `public_datasets_analysis`. 
+
+## Implementing a pathMS analogue with Proteome Discoverer
+
+It is possible to create a computational pipeline nearly analogous to our implementation of pathMS in a Proteome Discoverer analysis workflow. After exporting your filtered Consensus Features spreadsheet, you can convert it to an inclusion list formatted for use in creating an instrument method for a Thermo MS instrument using the script under `PD_workflow`. 
 
 For additional questions or support, please contact owenkleddy \[at\] gmail \[dot\] com or owenl \[at\] mit \[dot\] edu. 
