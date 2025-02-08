@@ -13,27 +13,30 @@ def plot_XIC(inf_data, ctrl_data, mz, output_dir):
     t_ctrl, i_ctrl = zip(*ctrl_data)
 
     i_max = np.max(i_inf + i_ctrl)
-    f, ax = plt.subplots(1, 2, figsize = (5, 10))
+    f, ax = plt.subplots(1, 2, figsize = (10, 10))
 
     
     ax[0].plot(t_inf, i_inf)
-    ax[0].set_xlabel('RT (min)')
+    ax[0].set_xlabel('RT (seconds)')
     ax[0].set_ylabel('intensity')
     ax[0].set_ylim([0, i_max])
     
     ax[1].plot(t_ctrl, i_ctrl)
-    ax[1].set_xlabel('RT (min)')
+    ax[1].set_xlabel('RT (seconds)')
     ax[1].set_ylabel('intensity')
     ax[1].set_ylim([0, i_max])
     f.savefig(join(output_dir, str(mz) + '.pdf'))
 
 #get and plot paired XICs for a set of peaks
-def get_XICs(inf_mzml, ctrl_mzml, output_dir, peaks : pd.DataFrame, ppm = 10., time_window = 2.5):
-    if 'RT Time (min)' in peaks.columns:
+#times are measured in seconds
+def get_XICs(inf_mzml, ctrl_mzml, output_dir, peaks : pd.DataFrame, ppm = 10., time_window = 2.5*60.):
+    if 'RT Time (min)' in peaks.columns: #for final inclusion list
         rt_field = 'RT Time (min)'
-    elif 'rt' in peaks.columns:
+        peaks[rt_field] = 60.*peaks[rt_field] #measure times in seconds
+    elif 'rtApex' in peaks.columns: #for Dinosaur features
+        rt_field = 'rtApex'
+    elif 'rt' in peaks.columns: #for unpaired peaks features (AutoMS format)
         rt_field = 'rt'
-        time_window = time_window*60. #in the automs format, rt is measured in seconds, not minutes
     else:
         raise ValueError('RT column not found')
     
@@ -87,7 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', help = 'infected mzML file', required = True)
     parser.add_argument('-c', help = 'control mzML file', required = True)
     parser.add_argument('-o', help = 'output directory', required = True)
-    parser.add_argument('-w', help = 'time window', required = False, default = 2.5, type = float)
+    parser.add_argument('-w', help = 'time window (in seconds)', required = False, default = 2.5*60., type = float)
 
     args = parser.parse_args()
 

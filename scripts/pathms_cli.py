@@ -2,18 +2,34 @@ import argparse
 import os
 from os.path import join, abspath
 import sys
+import pandas as pd
+from numpy import logical_and
 
 from generate_sample_file import generate_sample_file
 from unpaired_peaks import find_unpaired_peaks
 from AutoMS_format import AutoMS_format
 from match_psms import match_psms
 from inclusion_list_inf_only import make_inclusion_list
+from xic import get_XICs
 
 sys.path.insert(0, '') #always include the current working directory in PYTHONPATH so that modules in the working directory can be imported after a working directory change
 
 script_directory = os.path.dirname(os.path.abspath(sys.argv[0])) #directory where this script itself is located
 
-def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 40, length = 40, min_score = 0.3, min_snr = 1.5, min_intensity = 1e4, charge_state_list = '2,3', min_rt = 25.*60., max_rt = 115.*60., window = 3., regenerate = False, chunksize = 4096):
+def plot_qc_xic(inf_features_path, unpaired_features_path, inclusion_list_path, inf_mzml, ctrl_mzml, output_dir, n_qc_xic = 100, ppm = 10, time_window = 2.5*60.):
+    inf_features = pd.read_csv(inf_features_path, delim_whitespace = True)
+    unpaired_features = pd.read_csv(unpaired_features_path)
+    inclusion_list = pd.read_csv(inclusion_list_path)
+
+    inf_features_selected = inf_features[~inf_features['mz'].isin(unpaired_features['mz'])].sample(n = n_qc_xic).reset_index() #select Dinosaur features not found in the unpaired peaks list
+    unpaired_features_selected = unpaired_features[~unpaired_features['mz'].isin(inclusion_list['m/z'])].sample(n=n_qc_xic).reset_index() # select unpaired peaks that didn't make it into the final inclusion list
+    inclusion_list_selected = inclusion_list.sample(n = n_qc_xic).reset_index() #select random features from final inclusion list
+
+    get_XICs(inf_mzml, ctrl_mzml, join(output_dir, 'dinosaur_features'), inf_features_selected, ppm = ppm, time_window = time_window)
+    get_XICs(inf_mzml, ctrl_mzml, join(output_dir, 'unpaired_peaks'), unpaired_features_selected, ppm = ppm, time_window = time_window)
+    get_XICs(inf_mzml, ctrl_mzml, join(output_dir, 'inclusion_list'), inclusion_list_selected, ppm = ppm, time_window = time_window)
+
+def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 40, length = 40, min_score = 0.3, min_snr = 1.5, min_intensity = 1e4, charge_state_list = '2,3', min_rt = 25.*60., max_rt = 115.*60., window = 3., regenerate = False, chunksize = 4096, qc_xic = 0):
     
     #run Dinosaur to find MS1 peaks
     os.chdir(script_directory) #go to script directory to find the jar directory in relative terms
@@ -124,6 +140,13 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
                             max_rt = max_rt,
                             window = window
                             )
+        if qc_xic > 0:
+            if not os.path.isdir(join(working_dir, 'qc_xic')):
+                os.mkdir(join(working_dir, 'qc_xic'))
+                os.mkdir(join(working_dir, 'qc_xic/dinosaur_features'))
+                os.mkdir(join(working_dir, 'qc_xic/unpaired_peaks'))
+                os.mkdir(join(working_dir, 'qc_xic/inclusion_list'))
+            plot_qc_xic(join(working_dir, 'features/%s.features.tsv') % inf_file_prefix, join(working_dir, 'unpaired_peaks_AutoMS_z.csv'), join(working_dir, 'inclusion_list.csv'), inf_mzml, mock_mzml, join(working_dir, 'qc_xic'), n_qc_xic = qc_xic)
     else:
         print('Inclusion list is already up to date!')
 
@@ -145,6 +168,7 @@ if __name__ == '__main__':
     parser.add_argument('-z', '--charges', help = 'comma separated list of charge states', required = False, default = '2,3')
     parser.add_argument('--regenerate', help = 're-generate all intermediate outputs, even if they already exist', required = False, default = False)
     parser.add_argument('--chunksize', help = 'batch size for AutoMS scoring', required = False, type = int, default = 4096)
+    parser.add_argument('--qc_xic', help = 'number of randomly drawn xics to plot per category for qc purposes', required = False, default = 0, type = int)
 
     args = parser.parse_args()
 
@@ -160,5 +184,6 @@ if __name__ == '__main__':
                max_rt = args.max_rt,
                window = args.window,
                regenerate = args.regenerate,
-               chunksize = args.chunksize
+               chunksize = args.chunksize,
+               qc_xic = args.qc_xic
                )
