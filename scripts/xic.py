@@ -26,6 +26,7 @@ def plot_XIC(inf_data, ctrl_data, mz, output_dir):
     ax[1].set_ylabel('intensity')
     ax[1].set_ylim([0, i_max])
     f.savefig(join(output_dir, str(mz) + '.pdf'))
+    plt.close()
 
 #get and plot paired XICs for a set of peaks
 #times are measured in seconds
@@ -37,6 +38,9 @@ def get_XICs(inf_mzml, ctrl_mzml, output_dir, peaks : pd.DataFrame, ppm = 10., t
         rt_field = 'rtApex'
     elif 'rt' in peaks.columns: #for unpaired peaks features (AutoMS format)
         rt_field = 'rt'
+    elif 'RT in min' in peaks.columns: #for psm files
+        rt_field = 'RT in min'
+        peaks[rt_field] = 60.*peaks[rt_field]
     else:
         raise ValueError('RT column not found')
     
