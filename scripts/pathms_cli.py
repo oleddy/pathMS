@@ -39,12 +39,19 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
     if not os.path.isdir('features'):
         os.mkdir('features') #make a folder to put the extracted features in
     
-    mock_file_prefix = mock_mzml.split('/')[-1].split('.')[0]
+    mock_file_prefix = os.path.split(mock_mzml)[-1].split('.')[0]
     mock_features_path = abspath(mock_mzml)[:-5] + '.features.tsv'
 
-    inf_file_prefix = inf_mzml.split('/')[-1].split('.')[0]
+    inf_file_prefix = os.path.split(inf_mzml)[-1].split('.')[0]
     inf_features_path = abspath(inf_mzml)[:-5] + '.features.tsv'
     
+    if os.name == 'nt':
+        move_cmd = 'move'
+    elif os.name == 'posix':
+        move_cmd = 'mv'
+    else:
+        move_cmd = 'move'
+
     #the "regenerate" variable indicates: has any file in the stack been re-generated? If so, re-generate all downstream files even if they already exist. Can also pass as argument to force regenerating all files. 
 
     print('Step 1: peak calling with Dinosaur')
@@ -52,11 +59,11 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
     if (not os.path.isfile('./features/%s.features.tsv' % mock_file_prefix)) or (not os.path.isfile('./features/%s.features.tsv' % inf_file_prefix)) or regenerate:
         #run Dinosaur on mock/control mzML file
         os.system('java -Xmx8G -jar %s --verbose --profiling  --concurrency=%d %s' % (dinosaur_jar_dir, n_cores, abspath(mock_mzml))) 
-        os.system('mv %s ./features/%s.features.tsv' % (mock_features_path, mock_file_prefix)) #move results to the features directory
+        os.system(move_cmd + ' %s ./features/%s.features.tsv' % (mock_features_path, mock_file_prefix)) #move results to the features directory
 
         #run Dinosaur on infection/disease mzML file
         os.system('java -Xmx8G -jar %s --verbose --profiling --concurrency=%d %s' % (dinosaur_jar_dir, n_cores, abspath(inf_mzml))) 
-        os.system('mv %s ./features/%s.features.tsv' % (inf_features_path, inf_file_prefix)) #move results to the features directory
+        os.system(move_cmd + ' %s ./features/%s.features.tsv' % (inf_features_path, inf_file_prefix)) #move results to the features directory
     
         regenerate = True
     else:
@@ -75,7 +82,7 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
 
     #run deeprtalign
     if not os.path.isdir('./mass_align_all_information') or regenerate:
-        os.system('python3 -m deeprtalign -m Dinosaur -pn %d -f ./features -s sample_file.xlsx' % n_cores)
+        os.system('python -m deeprtalign -m Dinosaur -pn %d -f ./features -s sample_file.xlsx' % n_cores)
         regenerate = True
     else:
         print('Using existing chromatographic alignment')
