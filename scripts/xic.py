@@ -58,15 +58,16 @@ def get_XICs(inf_mzml, ctrl_mzml, output_dir, peaks : pd.DataFrame, ppm = 10., t
 
     for spectrum in inf_run:
         rt = spectrum.getRT()
-        for i, peak in peaks.iterrows():
-            if (rt <= peak[rt_field] + time_window) and (rt >= peak[rt_field] - time_window):
-                tolerance = peak[mz_field]*(ppm/1e6)
-                index = spectrum.findHighestInWindow(peak[mz_field], tolerance, tolerance)
-                if index == -1:
-                    intensity = 0.
-                else:
-                    intensity = spectrum[index].getIntensity()
-                inf_traces[i].append((rt, intensity))
+        if spectrum.getMSLevel() == 1:
+            for i, peak in peaks.iterrows():
+                if (rt <= peak[rt_field] + time_window) and (rt >= peak[rt_field] - time_window):
+                    tolerance = peak[mz_field]*(ppm/1e6)
+                    index = spectrum.findHighestInWindow(peak[mz_field], tolerance, tolerance)
+                    if index == -1:
+                        intensity = 0.
+                    else:
+                        intensity = spectrum[index].getIntensity()
+                    inf_traces[i].append((rt, intensity))
     
     ctrl_traces = [[] for _ in range(len(peaks))]
 
@@ -75,15 +76,16 @@ def get_XICs(inf_mzml, ctrl_mzml, output_dir, peaks : pd.DataFrame, ppm = 10., t
 
     for spectrum in ctrl_run:
         rt = spectrum.getRT()
-        for i, peak in peaks.iterrows():
-            if (rt <= peak[rt_field] + time_window) and (rt >= peak[rt_field] - time_window):
-                tolerance = peak[mz_field]*(ppm/1e6)
-                index = spectrum.findHighestInWindow(peak[mz_field], tolerance, tolerance)
-                if index == -1:
-                    intensity = 0.
-                else:
-                    intensity = spectrum[index].getIntensity()
-                ctrl_traces[i].append((rt, intensity))
+        if spectrum.getMSLevel() == 1:
+            for i, peak in peaks.iterrows():
+                if (rt <= peak[rt_field] + time_window) and (rt >= peak[rt_field] - time_window):
+                    tolerance = peak[mz_field]*(ppm/1e6)
+                    index = spectrum.findHighestInWindow(peak[mz_field], tolerance, tolerance)
+                    if index == -1:
+                        intensity = 0.
+                    else:
+                        intensity = spectrum[index].getIntensity()
+                    ctrl_traces[i].append((rt, intensity))
     for i in range(len(peaks)):
         plot_XIC(inf_traces[i], ctrl_traces[i], peaks[mz_field][i], output_dir)
 
