@@ -1,3 +1,6 @@
 [submodule "AutoMS"]
 	path = AutoMS
 	url = https://github.com/oleddy/AutoMS.git
+[submodule "deeprtalign"]
+	path = _deeprtalign
+	url = https://github.com/oleddy/deeprtalign.git

@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import filedialog
 from multiprocessing import cpu_count
+import multiprocessing as mp
+mp.freeze_support()
 import threading
 
 from pathms_cli import run_pathms

@@ -2,6 +2,7 @@ import argparse
 import os
 from os.path import join, abspath
 import sys
+
 import pandas as pd
 from numpy import logical_and
 
@@ -11,6 +12,9 @@ from AutoMS_format import AutoMS_format
 from match_psms import match_psms
 from inclusion_list_inf_only import make_inclusion_list
 from xic import get_XICs
+
+sys.path.append(r"C:\Users\owenk\Documents\pathmhc\pathMS\_deeprtalign\deeprtalign")
+from main import run
 
 sys.path.insert(0, '') #always include the current working directory in PYTHONPATH so that modules in the working directory can be imported after a working directory change
 
@@ -33,7 +37,12 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
     
     #run Dinosaur to find MS1 peaks
     os.chdir(script_directory) #go to script directory to find the jar directory in relative terms
-    dinosaur_jar_dir = abspath('../dinosaur/Dinosaur-1.2.0.free.jar') #find Dinosaur jar file
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        print('frozen')
+        dinosaur_jar_dir = join(sys._MEIPASS,'dinosaur/Dinosaur-1.2.0.free.jar') #find Dinosaur jar file in the frozen app directory
+    else:
+        print('not frozen')
+        dinosaur_jar_dir = abspath('../dinosaur/Dinosaur-1.2.0.free.jar') #find Dinosaur jar file
     os.chdir(working_dir) #go to working directory
     
     if not os.path.isdir('features'):
@@ -82,7 +91,8 @@ def run_pathms(inf_mzml, mock_mzml, psms_file, working_dir, n_cores = 1, ppm = 4
 
     #run deeprtalign
     if not os.path.isdir('./mass_align_all_information') or regenerate:
-        os.system('python -m deeprtalign -m Dinosaur -pn %d -f ./features -s sample_file.xlsx' % n_cores)
+        # os.system('python -m deeprtalign -m Dinosaur -pn %d -f ./features -s sample_file.xlsx' % n_cores)
+        run('Dinosaur', './features', 'sample_file.xlsx', processing_number = n_cores)
         regenerate = True
     else:
         print('Using existing chromatographic alignment')
